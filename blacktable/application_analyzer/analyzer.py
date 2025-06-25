@@ -42,7 +42,7 @@ class ApplicationAnalyzer:
         expected_ctc: str = None,
         notice_period: str = None,
         additional_fields: Dict[str, Any] = None,
-        resume: Any = None
+        resume: ResumeData = None
     ) -> ApplicationAnalysisResult:
         """
         Analyze a job application comprehensively
@@ -85,7 +85,7 @@ class ApplicationAnalyzer:
         if resume:
             try:
                 # Create ResumeData object for FIT Score analysis
-                resume_data = ResumeData(resume=resume)
+                resume_data = resume #ResumeData(resume=resume)
                 fit_score_result = self.fit_score_matcher.calculate_fit_score(
                     resume_data=resume_data,
                     job_description=job_description
