@@ -7,7 +7,7 @@ from ..core.ai_service import AIService
 # from ..core.config import AIConfig
 from ..fit_score.matcher import FITScoreMatcher
 from ..fit_score.models import FITScoreResult
-from ..resume_parser.models import ResumeData
+from ..resume_parser.models import Resume, ResumeData
 from .models import (
     JobApplication, JobRequirements, ApplicationAnalysisResult,
     CandidateProfile, WhyMatch, WhyNotMatch
@@ -42,7 +42,7 @@ class ApplicationAnalyzer:
         expected_ctc: str = None,
         notice_period: str = None,
         additional_fields: Dict[str, Any] = None,
-        resume: ResumeData = None
+        resume: Resume = None
     ) -> ApplicationAnalysisResult:
         """
         Analyze a job application comprehensively

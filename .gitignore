@@ -12,7 +12,6 @@ enhanced_application_analysis.json
 .gitignore
 log.log
 README_API.md
-README.md
 .gitignore
 test_detailed_integration.py
 blacktable/application_analyzer/analyzer.py

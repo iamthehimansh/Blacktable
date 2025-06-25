@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BlackTable API Testing GUI</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: white; font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        
+        .endpoint { 
+            border: none; 
+            margin: 25px 0; 
+            padding: 25px; 
+            border-radius: 15px; 
+            background: white; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .endpoint:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+        .endpoint h3 { 
+            color: #2c3e50; 
+            margin-top: 0; 
+            border-bottom: 3px solid #3498db; 
+            padding-bottom: 15px; 
+            font-size: 1.4em;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-group { margin: 20px 0; }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #34495e; 
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e1e8ed; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-1px);
+        }
+        textarea { height: 120px; resize: vertical; font-family: inherit; }
+        
+        button { 
+            background: linear-gradient(45deg, #3498db, #2980b9); 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        button:hover:not(:disabled) { 
+            background: linear-gradient(45deg, #2980b9, #1f5f99); 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        button:disabled { 
+            background: #95a5a6; 
+            cursor: not-allowed; 
+            transform: none; 
+            box-shadow: none;
+        }
+        
+        .response { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-radius: 10px; 
+            white-space: pre-wrap; 
+            max-height: 400px; 
+            overflow-y: auto; 
+            border: 2px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .error { 
+            background: linear-gradient(45deg, #e74c3c, #c0392b); 
+            color: white; 
+            border-color: #c0392b; 
+        }
+        .success { 
+            background: linear-gradient(45deg, #2ecc71, #27ae60); 
+            color: white; 
+            border-color: #27ae60; 
+        }
+        
+        .loading { 
+            display: inline-block; 
+            width: 18px; 
+            height: 18px; 
+            border: 3px solid rgba(255,255,255,0.3); 
+            border-radius: 50%; 
+            border-top-color: #ffffff; 
+            animation: spin 1s ease-in-out infinite; 
+            margin-right: 10px; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Pre-screening specific styles */
+        .prescreening-container { 
+            border: 2px solid #3498db; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+            position: relative;
+        }
+        .prescreening-container h4 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .prescreening-item { 
+            display: flex; 
+            gap: 15px; 
+            margin: 15px 0; 
+            align-items: flex-start;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+        .prescreening-item .question-field, .prescreening-item .answer-field { 
+            flex: 1; 
+        }
+        .prescreening-item .question-field input,
+        .prescreening-item .answer-field textarea {
+            margin-bottom: 0;
+        }
+        .prescreening-item .remove-btn-container {
+            display: flex;
+            align-items: center;
+            padding-top: 25px;
+        }
+        
+        .remove-question { 
+            background: linear-gradient(45deg, #e74c3c, #c0392b); 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+        .remove-question:hover { 
+            background: linear-gradient(45deg, #c0392b, #a93226); 
+            transform: translateY(-1px);
+        }
+        
+        .add-prescreening-btn { 
+            background: linear-gradient(45deg, #27ae60, #229954); 
+            color: white; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 15px 5px 5px 0; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        .add-prescreening-btn:hover { 
+            background: linear-gradient(45deg, #229954, #1e8449); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .prescreening-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .prescreening-counter {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .no-questions-msg {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 BlackTable API Testing GUI</h1>
+        
+        <!-- Resume Parser -->
+        <div class="endpoint">
+            <h3>📄 Resume Parser</h3>
+            <form id="resumeForm">
+                <div class="form-group">
+                    <label>Upload Resume:</label>
+                    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt" required>
+                </div>
+                <button type="submit" id="resumeBtn">Parse Resume</button>
+            </form>
+            <div id="resumeResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Question Generation -->
+        <div class="endpoint">
+            <h3>❓ Question Generation</h3>
+            <form id="questionForm">
+                <div class="form-group">
+                    <label>Job Description:</label>
+                    <textarea id="jobDescription" required placeholder="Enter job description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Interview Round:</label>
+                    <select id="interviewRound">
+                        <option value="screening">Screening</option>
+                        <option value="technical">Technical</option>
+                        <option value="behavioral">Behavioral</option>
+                        <option value="final">Final</option>
+                        <option value="hr">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Focus Area:</label>
+                    <input type="text" id="focusArea" placeholder="e.g., Python programming, leadership skills">
+                </div>
+                <div class="form-group">
+                    <label>Question Count:</label>
+                    <input type="number" id="questionCount" value="10" min="1" max="20">
+                </div>
+                <button type="submit" id="questionBtn">Generate Questions</button>
+            </form>
+            <div id="questionResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Personalized Question Generation -->
+        <div class="endpoint">
+            <h3>🎯 Personalized Question Generation</h3>
+            <form id="personalizedQuestionForm">
+                <div class="form-group">
+                    <label>Job Description:</label>
+                    <textarea id="personalizedJobDescription" required placeholder="Enter job description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Interview Round:</label>
+                    <select id="personalizedInterviewRound">
+                        <option value="screening">Screening</option>
+                        <option value="technical">Technical</option>
+                        <option value="behavioral">Behavioral</option>
+                        <option value="final">Final</option>
+                        <option value="hr">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Upload Resume:</label>
+                    <input type="file" id="personalizedResumeFile" accept=".pdf,.doc,.docx,.txt" required>
+                </div>
+                <div class="form-group">
+                    <label>Question Count:</label>
+                    <input type="number" id="personalizedQuestionCount" value="5" min="1" max="10">
+                </div>
+                <button type="submit" id="personalizedQuestionBtn">Generate Personalized Questions</button>
+            </form>
+            <div id="personalizedQuestionResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- FIT Score -->
+        <div class="endpoint">
+            <h3>📊 FIT Score Analysis</h3>
+            <form id="fitScoreForm">
+                <div class="form-group">
+                    <label>Job Description:</label>
+                    <textarea id="fitJobDescription" required placeholder="Enter job description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Upload Resume:</label>
+                    <input type="file" id="fitResumeFile" accept=".pdf,.doc,.docx,.txt" required>
+                </div>
+                <button type="submit" id="fitScoreBtn">Calculate FIT Score</button>
+            </form>
+            <div id="fitScoreResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Application Analyzer -->
+        <div class="endpoint">
+            <h3>🔍 Application Analyzer</h3>
+            <form id="applicationForm">
+                <div class="form-group">
+                    <label>Job Title:</label>
+                    <input type="text" id="jobTitle" required placeholder="e.g., Senior Software Engineer">
+                </div>
+                <div class="form-group">
+                    <label>Job Description:</label>
+                    <textarea id="appJobDescription" required placeholder="Enter job description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Salary Range:</label>
+                    <input type="text" id="salaryRange" placeholder="e.g., $80,000 - $120,000">
+                </div>
+                <div class="form-group">
+                    <label>Current CTC:</label>
+                    <input type="text" id="currentCtc" placeholder="e.g., $70,000">
+                </div>
+                <div class="form-group">
+                    <label>Expected CTC:</label>
+                    <input type="text" id="expectedCtc" placeholder="e.g., $90,000">
+                </div>
+                <div class="form-group">
+                    <label>Notice Period:</label>
+                    <input type="text" id="noticePeriod" placeholder="e.g., 2 weeks">
+                </div>
+                
+                <!-- Pre-screening Questions Section -->
+                <div class="prescreening-container">
+                    <div class="prescreening-header">
+                        <h4>📝 Pre-screening Questions</h4>
+                        <span class="prescreening-counter" id="questionCounter">0 Questions</span>
+                    </div>
+                    
+                    <div id="prescreeningQuestions">
+                        <div class="no-questions-msg" id="noQuestionsMsg">
+                            No pre-screening questions added yet. Click "Add Question" to get started!
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="addPrescreeningBtn" class="add-prescreening-btn">
+                        ➕ Add Question
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Resume:</label>
+                    <input type="file" id="appResumeFile" accept=".pdf,.doc,.docx,.txt" required>
+                </div>
+                <button type="submit" id="applicationBtn">Analyze Application</button>
+            </form>
+            <div id="applicationResponse" class="response" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="/static/gui.js"></script>
+</body>
+</html>
