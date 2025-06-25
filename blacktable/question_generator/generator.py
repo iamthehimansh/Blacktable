@@ -259,5 +259,5 @@ Each question should reference specific elements from their resume and be tailor
         for line in lines[:5]:  # Check first 5 lines
             if any(keyword in line.lower() for keyword in ['position', 'role', 'job title', 'we are looking for']):
                 return line.strip()
-        
-        return "Software Position"  # Default fallback
+
+        return "Unknown Position"  # Default fallback
