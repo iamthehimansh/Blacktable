@@ -4,7 +4,7 @@
 
 BlackTable is an advanced recruitment toolkit that leverages AI to automate and enhance various aspects of the hiring process. It helps recruiters and hiring managers make data-driven decisions by providing detailed analysis of resumes, generating tailored interview questions, calculating fit scores, and analyzing job applications.
 
-![BlackTable Logo](./blacktable.png)
+
 
 ## Features
 
